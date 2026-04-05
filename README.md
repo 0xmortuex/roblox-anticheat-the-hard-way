@@ -1,126 +1,94 @@
-# Module 01: Why Client Trust Is Broken
+# Roblox Anticheat — The Hard Way
 
-## The Problem
+Build a production-grade, server-side anticheat system for Roblox from scratch. No plugins. No toolbox models. Every line explained.
 
-In Roblox, every player runs a copy of your game's client scripts on their machine. Exploiters can:
+This course teaches you how to detect **speedhacks, flyhacks, noclip, aimbot, and firerate exploits** by building each detection system yourself — then trying to break it.
 
-- Read and modify any `LocalScript`
-- Fire any `RemoteEvent` with arbitrary data
-- Change their character's position, speed, and properties
-- Intercept and spoof network traffic between client and server
+## Why This Exists
 
-This means **anything the client tells the server could be a lie.**
+Most Roblox anticheats are either copy-pasted from Toolbox (and trivially bypassed), or proprietary systems nobody explains. Developers slap a `LocalScript` check on movement and call it "anticheat" — then wonder why exploiters walk through walls.
 
-## How Exploits Work
+This course starts from a single principle: **never trust the client.** Every module builds on that idea, moving from basic position validation to statistical aim analysis with Bayesian smoothing.
 
-An exploiter using a script executor can do this in seconds:
+By the end, you'll have a working anticheat framework and — more importantly — understand *why* each piece exists.
 
-```lua
--- Speedhack: directly set WalkSpeed
-local player = game.Players.LocalPlayer
-player.Character.Humanoid.WalkSpeed = 200
+## Who This Is For
 
--- Fly: disable gravity and move freely
-local hrp = player.Character.HumanoidRootPart
-hrp.Anchored = true  -- or use BodyVelocity/LinearVelocity
+- Roblox developers building competitive/PvP games
+- Developers who want to understand server-side security
+- Anyone tired of copy-paste anticheats that don't work
 
--- Noclip: disable collisions
-for _, part in pairs(player.Character:GetDescendants()) do
-    if part:IsA("BasePart") then
-        part.CanCollide = false
-    end
-end
+**Prerequisites:** Intermediate Lua, basic understanding of Roblox's client-server model, familiarity with `RemoteEvent` / `RemoteFunction`.
 
--- Fake hit: fire the damage remote directly
-game.ReplicatedStorage.Remotes.DamageEvent:FireServer(targetPlayer, 999)
-```
+## Modules
 
-None of these require advanced tools. Basic executor, copy-paste, done.
+| # | Module | What You'll Build |
+|---|--------|-------------------|
+| 01 | [Why Client Trust Is Broken](01-why-client-trust-is-broken/) | Demonstrate how exploits work, why client checks fail |
+| 02 | [Server-Authoritative Position Validation](02-server-authoritative-position/) | Position sampling, server-side ground truth |
+| 03 | [Speed, Fly & Noclip Detection](03-speed-fly-noclip/) | Three movement validators with grace period system |
+| 04 | [Hit Validation](04-hit-validation/) | Firerate checks, range validation, trajectory verification, wallbang detection |
+| 05 | [Statistical Aim Detection](05-statistical-aim-detection/) | Bayesian-smoothed accuracy tracking, z-score anomaly detection, bone-lock variance |
+| 06 | [Punishment Escalation](06-punishment-escalation/) | Suspicion scoring with decay, flag → kick → ban pipeline |
+| 07 | [Edge Cases That Break Everything](07-edge-cases/) | Ping tolerance, gamemodes, admin commands, knockback, abilities |
 
-## Why Client-Side Checks Fail
+Each module contains:
+- **`README.md`** — concept explanation and design decisions
+- **`code.lua`** — working, commented implementation
+- **`break-it.md`** — challenges to test and bypass your own system
 
-You might think: "Just check WalkSpeed on the client!"
+## How To Use This Course
 
-```lua
--- BAD: Client-side anticheat
-RunService.Heartbeat:Connect(function()
-    if humanoid.WalkSpeed > 16 then
-        humanoid.WalkSpeed = 16  -- "fixed!"
-    end
-end)
-```
+**Option A: Build along.** Read each module in order, implement the code in your own Roblox game, run the "break it" challenges.
 
-An exploiter can:
-1. Delete the LocalScript entirely
-2. Hook the function and make it return early
-3. Modify `WalkSpeed` after the check runs each frame
-4. Use `BodyVelocity` instead of WalkSpeed (bypasses the check completely)
+**Option B: Reference.** Jump to the module you need. Each one is self-contained with context.
 
-**Client-side checks are speed bumps, not walls.** They stop accidental bugs, not intentional exploits.
+**Option C: Fork and extend.** Take the framework, adapt it to your game's mechanics, submit a PR if you build something cool.
 
-## The Solution: Server Authority
-
-The server is the only trusted environment. Exploiters cannot modify server code.
-
-Instead of asking "did the client cheat?", the server asks: **"Is what the client claims physically possible?"**
+## Architecture Overview
 
 ```
-CLIENT says: "I hit Player2 in the head from 50 studs away"
-
-SERVER checks:
-  ✓ Was the client's weapon equipped?
-  ✓ Was enough time since last shot? (firerate)
-  ✓ Was the target within weapon range?
-  ✓ Was there line-of-sight? (no walls)
-  ✓ Was the hit position near the target's actual body?
-
-If ALL pass → apply damage
-If ANY fail → reject silently or add suspicion
+Client                          Server
+──────                          ──────
+Input → Movement → Position     MovementValidator ← samples HRP position
+     → Aim → Fire weapon        HitValidator ← validates every hit report
+     → Report hits via Remote → StatisticalAC ← tracks accuracy over time
+                                     │
+                                     ▼
+                                PunishmentService
+                                (Flag → Kick → Ban)
 ```
 
-This is the foundation of everything we build in this course.
+The server never asks the client "are you cheating?" It independently validates everything the client claims to do.
 
-## The Trust Boundary
+## Key Design Principles
 
-```
-┌─────────────────────────────────┐
-│         CLIENT (untrusted)      │
-│                                 │
-│  LocalScripts, UI, Input,      │
-│  Camera, Animations, Sound     │
-│                                 │
-│  Can be: read, modified,       │
-│  deleted, spoofed              │
-└───────────────┬─────────────────┘
-                │ RemoteEvents / RemoteFunctions
-                │ (this is the attack surface)
-┌───────────────▼─────────────────┐
-│         SERVER (trusted)        │
-│                                 │
-│  ServerScripts, DataStores,    │
-│  Physics authority, Damage,     │
-│  Anticheat validation          │
-│                                 │
-│  Cannot be modified by players │
-└─────────────────────────────────┘
-```
+**1. Validate, don't prevent.** Let the client move freely, but verify server-side. Preventing movement causes rubberbanding and bad UX.
 
-Every `RemoteEvent` your game uses is a potential exploit vector. The anticheat's job is to validate every message that crosses this boundary.
+**2. Score, don't ban.** A single suspicious event means nothing. Accumulated suspicion over time with decay separates exploiters from laggy players.
 
-## What You'll Build In This Course
+**3. Account for everything legitimate.** Dashes, knockback, abilities, admin commands, gamemodes — all of these cause sudden movement spikes. If your anticheat doesn't know about them, it kicks innocent players.
 
-| Module | Detection | Approach |
-|--------|-----------|----------|
-| 02 | Position spoofing | Server samples HRP position directly |
-| 03 | Speed / Fly / Noclip | Velocity checks, airborne tracking, wall raycasts |
-| 04 | Fake hits | Firerate, range, trajectory, wallbang validation |
-| 05 | Aimbot | Statistical accuracy analysis over time |
-| 06 | All of the above | Suspicion scoring, punishment pipeline |
-| 07 | False positives | Handling legitimate edge cases |
+**4. Ping is not a crime.** High-latency players look suspicious by default. Every tolerance must scale with ping, and kick thresholds should be more lenient for lagging players.
 
-## Key Takeaway
+## Tech Stack
 
-> The only code you can trust is code running on the server.
-> Everything else is a suggestion from an untrusted source.
+- **Language:** Luau (Roblox)
+- **Architecture:** Server-authoritative with client-side prediction
+- **Dependencies:** None — pure ModuleScripts, no external packages
 
-→ [Next: Module 02 — Server-Authoritative Position Validation](../02-server-authoritative-position/README.md)
+## Contributing
+
+Found a bypass? Improved a detection method? PRs welcome.
+
+- Fork → Branch → Implement → Test → PR
+- Every detection change must include an explanation of *what it catches* and *what it doesn't*
+- Breaking changes to the scoring system need updated thresholds
+
+## License
+
+MIT — use it, modify it, ship it. Credit appreciated but not required.
+
+---
+
+Built by [0xmortuex](https://github.com/0xmortuex)
