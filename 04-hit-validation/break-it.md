@@ -36,4 +36,4 @@ Unequip a weapon (it goes to Backpack), then fire the remote claiming hits from 
 
 **Hint:** Some games allow throwing weapons that continue dealing damage after being unequipped. If yours doesn't, restrict validation to equipped weapons only.
 
-→ [Next: Module 05](../05-statistical-aim-detection/)
+→ [Next: Module 05](../05-statistical-aim-detection/README.md)

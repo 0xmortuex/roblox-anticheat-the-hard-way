@@ -163,4 +163,4 @@ During a grace period, the speed check doesn't flag. This prevents:
 > legitimate movement looks like. The grace period system is the
 > difference between a working anticheat and a false-flag machine.
 
-→ [Next: Module 04 — Hit Validation](../04-hit-validation/)
+→ [Next: Module 04 — Hit Validation](../04-hit-validation/README.md)

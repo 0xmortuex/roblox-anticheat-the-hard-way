@@ -158,4 +158,4 @@ The `ShotFiredEvent` arrives *before* hit reports. This lets the server know whe
 > Firerate hacks fail the cooldown check. Wallhacks fail line-of-sight.
 > Each layer catches what the others miss.
 
-→ [Next: Module 05 — Statistical Aim Detection](../05-statistical-aim-detection/)
+→ [Next: Module 05 — Statistical Aim Detection](../05-statistical-aim-detection/README.md)

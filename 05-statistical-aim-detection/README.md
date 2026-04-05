@@ -138,4 +138,4 @@ Calculate the headshot rate for shots in the top 25% of distance. If it's *highe
 > A human who hits 80% headshots for 200 consecutive shots
 > doesn't exist. Math catches what per-shot validation misses.
 
-→ [Next: Module 06 — Punishment Escalation](../06-punishment-escalation/)
+→ [Next: Module 06 — Punishment Escalation](../06-punishment-escalation/README.md)

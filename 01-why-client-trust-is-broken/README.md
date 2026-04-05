@@ -123,4 +123,4 @@ Every `RemoteEvent` your game uses is a potential exploit vector. The anticheat'
 > The only code you can trust is code running on the server.
 > Everything else is a suggestion from an untrusted source.
 
-→ [Next: Module 02 — Server-Authoritative Position Validation](../02-server-authoritative-position/)
+→ [Next: Module 02 — Server-Authoritative Position Validation](../02-server-authoritative-position/README.md)

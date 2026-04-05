@@ -24,4 +24,4 @@ The tracker samples tagged "Dummy" models for hit validation. Can an exploiter c
 
 **Hint:** Clients can add CollectionService tags. Consider validating that tagged dummies exist in a known container (e.g., a specific folder) rather than trusting the tag alone.
 
-→ [Next: Module 03](../03-speed-fly-noclip/)
+→ [Next: Module 03](../03-speed-fly-noclip/README.md)

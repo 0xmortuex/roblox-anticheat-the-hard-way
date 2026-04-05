@@ -36,4 +36,4 @@ If many players on your server are bad at aiming, the global average drops. Now 
 
 **Hint:** Hard-clamping the global averages prevents this: `MeanAcc = clamp(MeanAcc, 0.15, 0.50)`. The baseline can't drop below 15% or above 50%. The z-score check is a supplement to the hard limits, not a replacement.
 
-→ [Next: Module 06](../06-punishment-escalation/)
+→ [Next: Module 06](../06-punishment-escalation/README.md)

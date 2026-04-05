@@ -171,4 +171,4 @@ This gives admins real-time visibility without needing to be in-game.
 > Decay separates the laggy player who tripped one check from the
 > exploiter who trips checks every 5 seconds.
 
-→ [Next: Module 07 — Edge Cases That Break Everything](../07-edge-cases/)
+→ [Next: Module 07 — Edge Cases That Break Everything](../07-edge-cases/README.md)

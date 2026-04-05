@@ -30,4 +30,4 @@ Place an invisible, tiny part under your character so the ground raycast always 
 
 **Hint:** The anticheat excludes the player's character from the raycast. But what about parts the player creates? Should the raycast filter by collision group?
 
-→ [Next: Module 04](../04-hit-validation/)
+→ [Next: Module 04](../04-hit-validation/README.md)

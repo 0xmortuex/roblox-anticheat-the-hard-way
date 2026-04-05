@@ -30,4 +30,4 @@ Trigger thousands of minor violations rapidly to flood the Discord webhook with 
 
 **Hint:** Rate-limit webhook calls. Don't send a webhook for every flag — batch them or only send on escalation (first flag, kick, ban).
 
-→ [Next: Module 07](../07-edge-cases/)
+→ [Next: Module 07](../07-edge-cases/README.md)

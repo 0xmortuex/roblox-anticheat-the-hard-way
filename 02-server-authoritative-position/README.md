@@ -94,4 +94,4 @@ Roblox gives physics authority to the client for their own character. This means
 > The server doesn't need the client to report its position.
 > It already has it. Just read it and compare against what's possible.
 
-→ [Next: Module 03 — Speed, Fly & Noclip Detection](../03-speed-fly-noclip/)
+→ [Next: Module 03 — Speed, Fly & Noclip Detection](../03-speed-fly-noclip/README.md)

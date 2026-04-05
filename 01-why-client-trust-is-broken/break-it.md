@@ -30,4 +30,4 @@ hrp.CFrame = CFrame.new(0, 1000, 0)
 
 If any of these worked in your game, you need the systems built in Modules 02–06. Every exploit here is trivial — the defenses shouldn't be.
 
-→ [Next: Module 02](../02-server-authoritative-position/)
+→ [Next: Module 02](../02-server-authoritative-position/README.md)
